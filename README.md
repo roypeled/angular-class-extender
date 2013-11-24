@@ -33,11 +33,17 @@ function ParentClass($scope){
   }
 }
 
+function HelperClass($scope){
+  $scope.help = function(){
+    // Get help!
+  }
+}
+
 function ChildClass($extend, $scope){
-  $extend($scope).with(ParentClass);
+  $extend($scope).with(ParentClass, HelperClass);
 }
 ```
-Now calling `foo()` from `ChildClass` would actually call `foo()` from `ParentClass` and do 'A'. 
+Now calling `foo()` or `help()` from `ChildClass` would actually call `foo()` from `ParentClass` and do 'A' or `help()` from `HelperClass`. 
 
 ### Overriding Methods and Calling Super Methods
 ```js
