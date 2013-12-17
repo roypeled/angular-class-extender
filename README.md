@@ -48,13 +48,13 @@ Now calling `foo()` or `help()` from `ChildClass` would actually call `foo()` fr
 ### Overriding Methods and Calling Super Methods
 ```js
 function ChildClass($extend, $scope){
-  $extend($scope).with(ParentClass);
+  var $super = $extend($scope).with(ParentClass);
   
   $scope.foo = function(){
     
     // Do B
     
-    $scope.$super.foo();
+    $super.foo();
   }
 }
 ```
