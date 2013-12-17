@@ -11,7 +11,6 @@
 
             var abstracts = {};
             var bindedHandlers = [];
-            currentScope.$super = {};
 
             currentScope.$abstract = function(name){
                 abstracts[name] = true;
@@ -24,10 +23,13 @@
             return {
                 with: function(){
                     var klasses = arguments;
+                    var $super = {};
+
                     for(var i=0; i<klasses.length; i++){
                         $injector.instantiate(klasses[i], {$scope: currentScope});
                         for(var func in currentScope){
                             if(!/^(\$|this)/.test(func)){
+                                $super[func] = currentScope[func];
                                 currentScope.$super[func] = currentScope[func];
                             }
                         }
@@ -57,6 +59,8 @@
 
                         currentScope.$digest();
                     }, 5);
+
+                    return $super;
                 }
             }
         }
