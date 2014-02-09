@@ -1,10 +1,20 @@
 /**!
  * AngularJS class extender
  * @author  Roy  <peled.roy@gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 (function() {
     var angularExtender = angular.module('ngExtender', []);
+
+    var currentLocals;
+
+    angularExtender.factory('$extendedController', ['$controller', function($controller) {
+        return function(name, scope){
+            currentLocals = scope;
+            $controller(name, scope);
+            currentLocals = null;
+        }
+    }]);
 
     angularExtender.factory('$extend', ['$injector', function($injector) {
         return function(currentScope){
@@ -25,12 +35,19 @@
                     var klasses = arguments;
                     var $super = {};
 
+                    var locals = {$scope: currentScope};
+
+                    if(currentLocals){
+                        for(var key in currentLocals){
+                            locals[key] = locals[key] || currentLocals[key];
+                        }
+                    }
+
                     for(var i=0; i<klasses.length; i++){
-                        $injector.instantiate(klasses[i], {$scope: currentScope});
+                        $injector.instantiate(klasses[i], locals);
                         for(var func in currentScope){
                             if(!/^(\$|this)/.test(func)){
                                 $super[func] = currentScope[func];
-                                currentScope.$super[func] = currentScope[func];
                             }
                         }
                     }
