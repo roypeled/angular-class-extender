@@ -96,3 +96,21 @@ function ChildClass($extend, $scope){
   
   $scope.bar = "hello world!"
 }
+```
+
+### Unit Testing
+Angular Class Extender now fully supports unit testing by using the injected class $extendedController instead of $controller
+
+```js
+it("should properly identify extended methods", function(){
+
+    var scope = $rootScope.$new();
+    scope.test = true;
+
+    $extendedController("ChildClass", {$scope: scope});
+    expect(scope.test).toEqual(true);
+    expect(scope.bar).toEqual("hello world!");
+    expect(scope.foo).toBeDefined();
+    
+});
+```
