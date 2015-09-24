@@ -1,44 +1,48 @@
 angular.module("animals", ["ngExtender"]);
 
-function AbstractMammal($scope){
+function AbstractMammal(){
 
-    $scope.speak = function(){
-        var rand = Math.round(Math.random() * ($scope.wordsArray.length-1));
-        window.alert($scope.wordsArray[rand]);
+    var self = this;
+    
+    this.speak = function(){
+        var rand = Math.round(Math.random() * (self.wordsArray.length-1));
+        window.alert(self.wordsArray[rand]);
     }
 
-    $scope.setTitle = function(){
-        $scope.title = "Hi! I am a " + $scope.name + "!";
+    this.setTitle = function(){
+        self.title = "Hi! I am a " + self.name + "!";
     }
 
-    $scope.$binded(function(){
-        $scope.setTitle();
+    this.$binded(function(){
+        self.setTitle();
     });
 
-    $scope.$abstract("wordsArray");
-    $scope.$abstract("name");
+    this.$abstract("wordsArray");
+    this.$abstract("name");
 }
 
-function Cat($extend, $scope){
-    $extend($scope).with(AbstractMammal);
+function Cat($extend){
+    $extend(this).with(AbstractMammal);
 
-    $scope.wordsArray = ["Meow!", "Hiss!"];
-    $scope.name = "Cat";
+    this.wordsArray = ["Meow!", "Hiss!"];
+    this.name = "Cat";
 }
 
-function Dog($extend, $scope){
-    $extend($scope).with(AbstractMammal);
+function Dog($extend){
+    $extend(this).with(AbstractMammal);
 
-    $scope.wordsArray = ["Woof!", "Lick!"];
-    $scope.name = "Dog";
+    this.wordsArray = ["Woof!", "Lick!"];
+    this.name = "Dog";
 }
 
-function AngryDog($extend, $scope){
-    $extend($scope).with(Dog);
+function AngryDog($extend){
+    var $super = $extend(this).with(Dog);
+    
+    var self = this;
 
-    $scope.speak = function(){
-        $scope.$super.speak();
-        $scope.name = "Angry Dog";
-        $scope.setTitle();
+    this.speak = function(){
+        $super.speak();
+        self.name = "Angry Dog";
+        self.setTitle();
     }
 }
