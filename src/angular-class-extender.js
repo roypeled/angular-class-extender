@@ -16,19 +16,24 @@
         }
     }]);
 
-    angularExtender.factory('$extend', ['$injector', function($injector) {
-        return function(currentScope){
+    angularExtender.factory('$extend', ['$injector', '$rootScope', function($injector, $rootScope) {
+
+        function inject(func, locals){
+            return $injector.instantiate(func, locals);
+        }
+
+        function Extend(currentScope){
 
             var abstracts = {};
             var bindedHandlers = [];
 
             currentScope.$abstract = function(name){
                 abstracts[name] = true;
-            }
+            };
 
             currentScope.$binded = function(handler){
                 bindedHandlers.push(handler);
-            }
+            };
 
             return {
                 with: function(){
@@ -44,7 +49,8 @@
                     }
 
                     for(var i=0; i<klasses.length; i++){
-                        $injector.instantiate(klasses[i], locals);
+                        var klass = Extend.inject(klasses[i], locals);
+                        angular.extend(currentScope, klass);
                         for(var func in currentScope){
                             if(!/^(\$|this)/.test(func)){
                                 $super[func] = currentScope[func];
@@ -52,7 +58,7 @@
                         }
                     }
 
-                    setTimeout(function(){
+                    $rootScope.$$postDigest(function(){
                         for(var func in abstracts){
                             if(!currentScope[func]){
 
@@ -74,12 +80,16 @@
                         while(bindedHandlers.length)
                             bindedHandlers.pop()();
 
-                        currentScope.$digest();
-                    }, 5);
+                        currentScope.$digest && currentScope.$digest();
+                    });
 
                     return $super;
                 }
             }
         }
+
+        Extend.inject = inject;
+
+        return Extend;
     }]);
 })();
