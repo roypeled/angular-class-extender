@@ -2,7 +2,7 @@
 <html>
 <head>
     <title></title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.min.js"></script>
     <script src="angular-class-extender.js"></script>
     <script src="app.js"></script>
 </head>
@@ -10,19 +10,19 @@
 
 <h1>Angular class extender</h1>
 
-<div ng-controller="Dog">
-    <h1>{{title}}</h1>
-    <button ng-click="speak()">Speak!</button>
+<div ng-controller="Dog as ctrl">
+    <h1>{{ctrl.title}}</h1>
+    <button ng-click="ctrl.speak()">Speak!</button>
 </div>
 
-<div ng-controller="Cat">
-    <h1>{{title}}</h1>
-    <button ng-click="speak()">Speak!</button>
+<div ng-controller="Cat as ctrl">
+    <h1>{{ctrl.title}}</h1>
+    <button ng-click="ctrl.speak()">Speak!</button>
 </div>
 
-<div ng-controller="AngryDog">
-    <h1>{{title}}</h1>
-    <button ng-click="speak()">Speak!</button>
+<div ng-controller="AngryDog as ctrl">
+    <h1>{{ctrl.title}}</h1>
+    <button ng-click="ctrl.speak()">Speak!</button>
 </div>
 
 
