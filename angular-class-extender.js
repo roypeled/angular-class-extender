@@ -1,39 +1,64 @@
 /**!
  * AngularJS class extender
  * @author  Roy  <peled.roy@gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 (function() {
     var angularExtender = angular.module('ngExtender', []);
 
-    angularExtender.factory('$extend', ['$injector', function($injector) {
-        return function(currentScope){
+    var currentLocals;
+
+    angularExtender.factory('$extendedController', ['$controller', function($controller) {
+        return function(name, scope){
+            currentLocals = scope;
+            $controller(name, scope);
+            currentLocals = null;
+        }
+    }]);
+
+    angularExtender.factory('$extend', ['$injector', '$rootScope', function($injector, $rootScope) {
+
+        function inject(func, locals){
+            return $injector.instantiate(func, locals);
+        }
+
+        function Extend(currentScope){
 
             var abstracts = {};
             var bindedHandlers = [];
-            currentScope.$super = {};
 
             currentScope.$abstract = function(name){
                 abstracts[name] = true;
-            }
+            };
 
             currentScope.$binded = function(handler){
                 bindedHandlers.push(handler);
-            }
+            };
 
             return {
                 with: function(){
                     var klasses = arguments;
+                    var $super = {};
+
+                    var locals = {$scope: currentScope};
+
+                    if(currentLocals){
+                        for(var key in currentLocals){
+                            locals[key] = locals[key] || currentLocals[key];
+                        }
+                    }
+
                     for(var i=0; i<klasses.length; i++){
-                        $injector.instantiate(klasses[i], {$scope: currentScope});
+                        var klass = Extend.inject(klasses[i], locals);
+                        angular.extend(currentScope, klass);
                         for(var func in currentScope){
                             if(!/^(\$|this)/.test(func)){
-                                currentScope.$super[func] = currentScope[func];
+                                $super[func] = currentScope[func];
                             }
                         }
                     }
 
-                    setTimeout(function(){
+                    $rootScope.$$postDigest(function(){
                         for(var func in abstracts){
                             if(!currentScope[func]){
 
@@ -55,10 +80,16 @@
                         while(bindedHandlers.length)
                             bindedHandlers.pop()();
 
-                        currentScope.$digest();
-                    }, 5);
+                        currentScope.$digest && currentScope.$digest();
+                    });
+
+                    return $super;
                 }
             }
         }
+
+        Extend.inject = inject;
+
+        return Extend;
     }]);
 })();
