@@ -51,7 +51,7 @@
                     for(var i=0; i<klasses.length; i++){
                         var klass = klasses[i];
                         angular.extend(currentScope, klass);
-                        klass = Extend.inject(, locals);
+                        klass = Extend.inject(klass, locals);
                         
                         for(var func in currentScope){
                             if(!/^(\$|this)/.test(func)){
