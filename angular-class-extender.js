@@ -49,8 +49,10 @@
                     }
 
                     for(var i=0; i<klasses.length; i++){
-                        var klass = Extend.inject(klasses[i], locals);
+                        var klass = klasses[i];
                         angular.extend(currentScope, klass);
+                        klass = Extend.inject(, locals);
+                        
                         for(var func in currentScope){
                             if(!/^(\$|this)/.test(func)){
                                 $super[func] = currentScope[func];
